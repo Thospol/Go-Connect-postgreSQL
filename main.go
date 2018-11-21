@@ -16,13 +16,8 @@ var (
 
 func main() {
 	connectDB()
-	//selectAll(db)
-	insertstmt = "INSERT INTO users (firstname, lastname, email,tel) values ($1, $2,$3,$4)"
-	firstname = "aekawan"
-	lastname = "krubsun"
-	email = "aekawan@gmail.com"
 	tel = "0897979696"
-	insertData(db, firstname, lastname, email, tel, insertstmt)
+	updateData(db, tel, 4)
 
 }
 func connectDB() {
@@ -36,7 +31,7 @@ func connectDB() {
 }
 
 func selectAll(db *sql.DB) {
-	querystmt := "select * from Users"
+	querystmt := "select * from Users Order by id asc"
 	rows, err := db.Query(querystmt)
 	if err != nil {
 		log.Fatal(err)
@@ -60,7 +55,8 @@ func selectRow(db *sql.DB, idUser int) {
 	}
 }
 
-func insertData(db *sql.DB, firstname, lastname, email, tel, insertstmt string) {
+func insertData(db *sql.DB, firstname, lastname, email, tel string) {
+	insertstmt = "INSERT INTO users (firstname, lastname, email,tel) values ($1, $2,$3,$4)"
 	result, err := db.Exec(insertstmt, firstname, lastname, email, tel)
 	if err != nil {
 		log.Fatal(err)
@@ -85,5 +81,19 @@ func deleteData(db *sql.DB, id int) {
 		log.Fatal(err)
 	}
 	fmt.Println("result Number Row of Delete:", numberOfDeleteRow)
+	selectAll(db)
+}
+
+func updateData(db *sql.DB, tel string, id int) {
+	updateStmt := "update users set tel = $1 where id = $2"
+	result, err := db.Exec(updateStmt, tel, id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	numberOfUpdateRow, err := result.RowsAffected()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("result Number Row of updateData:", numberOfUpdateRow)
 	selectAll(db)
 }
